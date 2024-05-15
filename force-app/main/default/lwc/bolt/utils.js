@@ -1,0 +1,117 @@
+import { 
+  useSObject, 
+  useSObjects, 
+  usePoller,
+  useExternalStyles,
+  useRecordFields, 
+  useRecordsFields, 
+  useRelatedRecords
+} from "./bolt";
+/**
+ * Useful method to pass as an input a custom label formated as an ES6 template literal
+ * like this : Hello ${name}
+ * Take an object of the shape as a second parameter : {name: 'John Doe'}
+ * @param {string} input
+ * @param {Object} params
+ * @returns {string}
+ */
+export function interpolate(input,params) {
+  const names = Object.keys(params);
+  const vals = Object.values(params);
+  return new Function(...names, `return \`${input}\`;`)(...vals);
+}
+/**
+ * Will plug your styles to an html element that has the attribute [data-style] on it
+ * @param {string} styles 
+ */
+export function setExternalStyles(styles) {
+  this.refs?.style?.insertAdjacentHTML('beforeend',/*html*/`<style>${styles}</style>`)
+}
+
+/**
+ * @callback From
+ * @param {Object} obj
+ * @returns {Object}
+ */
+/**
+ * @typedef {Object} PickReturns
+ * @param {From} from
+ */
+/**
+ * @param {Array<String>} fields 
+ * @returns {PickReturns}
+ */
+export function pick(...fields) {
+  return {
+    from: (obj) => (({...fields}) => ({...fields}))(obj)
+  }
+}
+
+export function trace(name, obj) {
+  console.error(name, JSON.parse(JSON.stringify(obj)))
+}
+
+/**
+ * 
+ * @param  {any[]} fns
+ * @template T 
+ * @returns {Constructor<T>}
+ */
+export function mix(...fns) {
+  const base = fns.pop();
+  return fns.reduceRight( (comp, [mixin,...arg]) => class extends mixin(comp, ...arg){}, base);
+}
+export const compose = mix;
+
+export const isCustomObject = (objectApiName) => objectApiName.endsWith('__c');
+export const trimCustomIdentifier = (objectApiName, until = -1) => objectApiName.slice(0,until);
+export const sanitizeApiName = (objectApiName) => 
+  isCustomObject(objectApiName) 
+    ? trimCustomIdentifier(objectApiName)
+    : `${objectApiName}__`;
+export const sanitizeApiNameCamelCase = (objectApiName) => 
+  isCustomObject(objectApiName) 
+    ? trimCustomIdentifier(objectApiName, -3)
+    : `${objectApiName}`;
+
+export function deepenedObject(obj) {
+  let ret = {}
+  Object.entries(obj).forEach(([k,v]) => {
+    const _obj = k.split('.').reduceRight((prev,curr) => Object.fromEntries([[curr,prev]]),v)
+    const key = Object.keys(_obj)[0]
+    const duplicateKey = Object.keys(ret).includes(key)
+    if(duplicateKey) ret[key] = {...ret[key], ..._obj[key]}
+    else ret = {...ret,..._obj}
+  })
+  return ret;
+}
+/**
+ * 
+ * @param {Field[][]} arr 
+ * @returns {Record<string, Field[]>}
+ */
+export const createFieldsByObjectApiName = arr =>  arr.reduce((acc, curr) => Object.assign(acc, Object.fromEntries([[curr[0].objectApiName, curr]])),{})
+
+export function getStack(args) {
+  const stack = [];
+  if(args?.recordFields) stack.push([useRecordFields, args.recordFields]);
+  if(args?.recordsFields) stack.push([useRecordsFields, args.recordsFields]);
+  if(args?.SObject) stack.push([useSObject, args.SObject]);
+  if(args?.SObjects) stack.push([useSObjects, args.SObjects]);
+  if(args?.relatedRecords) stack.push([useRelatedRecords, args.relatedRecords]);
+  if(args?.externalStyles) stack.push([useExternalStyles, args.externalStyles]);
+  if(args?.poller) stack.push([usePoller, args.poller]);
+  return stack;
+}
+
+export const isOfMultipleSObject = fields => fields?.[0] instanceof Array;
+
+export const boolPropsReducer = self => [
+  (acc, prop) => acc && self[prop],
+  true
+]
+
+export const allMxnDone = (self, maybeSuspendedMixins) => 
+  maybeSuspendedMixins
+    .filter(mxnProp => mxnProp in self)
+    .reduce(...boolPropsReducer(self))

@@ -1,0 +1,6 @@
+<template>
+  <template for:each={recordFields} for:item="record">
+    <c-bolt-input key={record.fieldApiName} lwc:spread={record}></c-bolt-input>
+  </template>
+  <slot></slot>
+</template>
