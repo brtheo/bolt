@@ -5,7 +5,7 @@
       "default": true
     }
   ],
-  "name": "Voltage",
+  "name": "bolt",
   "namespace": "",
   "sfdcLoginUrl": "https://login.salesforce.com",
   "sourceApiVersion": "59.0"
