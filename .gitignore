@@ -11,10 +11,8 @@ deploy-options.json
 .vscode
 .forceignore
 .prettierrc
+.prettierignore
 jest.config
-package.json
-sfdx-project.json
-
 # LWC VSCode autocomplete
 **/lwc/jsconfig.json
 
@@ -27,9 +25,6 @@ logs
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-config/
-manifest/
-scripts/
 # Dependency directories
 node_modules/
 
