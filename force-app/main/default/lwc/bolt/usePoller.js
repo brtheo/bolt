@@ -37,7 +37,7 @@ export const usePoller = (genericConstructor, {resolveCondition, wiredMethod, ma
       this.POLLER_PROGRESS = 100;
       window.clearInterval(this.__POLLER_MXN_INTERVAL__);
       this.dispatchEvent(
-        new CustomEvent('polling:end', {
+        new CustomEvent('polling-end', {
           detail: {
             response: this?.[wiredMethod]?.data?.at(0),
             status
