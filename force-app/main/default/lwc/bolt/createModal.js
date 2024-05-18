@@ -14,7 +14,7 @@ import LightningModal from 'lightning/modal';
 
  */
 // * @param {Options} options
-export const createModal = (stylesheet, HTMLTemplate, callbacks = false) => {
+export const createModal = (HTMLTemplate, stylesheet , callbacks = false) => {
   class Modal extends LightningModal {
     // Data used in our template accessible through the short key '$'
     @api $;
