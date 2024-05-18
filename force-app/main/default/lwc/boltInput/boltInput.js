@@ -40,7 +40,6 @@ export default class BoltInput extends LightningElement {
   }
   bind(e) { 
     this[this.currentValue] = e.detail.value;
-    console.log('sending')
     this.dispatchEvent(
       new CustomEvent('bolt-bind', {
         detail:{

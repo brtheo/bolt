@@ -12,7 +12,6 @@ function boltBind(e)  {
         {...this[target]}, 
         recordField[objectApiName]
       );
-    else console.log('will propagate')
 }
 
 export class BoltElement extends mix(
