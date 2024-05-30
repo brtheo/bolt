@@ -24,6 +24,6 @@ export const createForm = ( {
   [useForm, fields, mode ?? 'edit'],
   [useDML],
   [useFormValidation],
-  [useSuspense, template, untilTemplate ?? _untilTemplate],
+  [useSuspense, {template, untilTemplate: untilTemplate ?? _untilTemplate}],
   BoltElement
 );

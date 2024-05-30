@@ -30,18 +30,25 @@ const maybeSuspendedMixins = [
  * }
  */
 /**
+ * @typedef {Object} SuspenseParams
+ * @param {Function} template
+ * @param {Function} [untilTemplate]
+ * @param {Function} done
+ */
+/**
  * @param {Constructor<any>} genericConstructor 
- * @param {Function} template 
- * @param {Function} untilTemplate 
+ * @param {SuspenseParams} params
  * @returns {Constructor<any>}
  */
-export function useSuspense(genericConstructor, template, untilTemplate = _untilTemplate) {
+export function useSuspense(genericConstructor, params) {
+  if(params?.untilTemplate === undefined) params.untilTemplate = _untilTemplate; 
   return class extends genericConstructor {
     #INITIATED = false;
     get __SUSPENSE_MXN_ALL_SETTLED__() {
-      return allMxnDone(this, maybeSuspendedMixins)
+      const _allMxnDone = allMxnDone(this, maybeSuspendedMixins)
+      return params?.done ? params.done(this) && _allMxnDone : _allMxnDone;
     }
-    render() {  return this.__SUSPENSE_MXN_ALL_SETTLED__ ? template : untilTemplate; }
+    render() {  return this.__SUSPENSE_MXN_ALL_SETTLED__ ? params?.template ?? this.renderedTemplate : params?.untilTemplate; }
     renderedCallback() {
       if(this.__SUSPENSE_MXN_ALL_SETTLED__ && !this.#INITIATED) {
         this.template.dispatchEvent(new CustomEvent('all-settled'));
