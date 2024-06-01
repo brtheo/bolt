@@ -43,7 +43,7 @@ export function setExternalStyles(styles) {
  */
 export function pick(...fields) {
   return {
-    from: (obj) => (({...fields}) => ({...fields}))(obj)
+    from: (obj) => fields.reduce((acc, field) => Object.assign(acc, {[field]: obj[field]}) , {})
   }
 }
 

@@ -17,15 +17,13 @@ export const usePoller = (genericConstructor, {resolveCondition, wiredMethod, ma
         this.POLLER_PROGRESS += Math.round(100 / this.__POLLER_MXN_MAX_ITERATION__);
         if(resolveCondition instanceof Array) {
           const [fun, _prop] = resolveCondition;
-          if(fun(this?.[wiredMethod]?.data?.at(0)?.[_prop]))
-            this.pollingHasEnded('OK');
-        } else {
-          if(typeof resolveCondition === 'function') 
-            triggerProp = resolveCondition(this?.[wiredMethod]?.data?.at(0));
-          if(this?.[wiredMethod]?.data?.at(0)?.[triggerProp])
+          if(fun(this?.[wiredMethod]?.data?.at(0)?.[_prop])) {
             this.pollingHasEnded('OK');
         }
-        
+        } else if(typeof resolveCondition === 'function') {
+          if(resolveCondition(this?.[wiredMethod]?.data?.at(0))) this.pollingHasEnded('OK'); 
+        } else if(this?.[wiredMethod]?.data?.at(0)?.[triggerProp])
+          this.pollingHasEnded('OK'); 
         
         if(this.POLLER_ITTERATION === this.__POLLER_MXN_MAX_ITERATION__)
           this.pollingHasEnded('POLLING_LIMIT_EXCEEDED');
@@ -36,7 +34,7 @@ export const usePoller = (genericConstructor, {resolveCondition, wiredMethod, ma
     pollingHasEnded(status) {
       this.POLLER_PROGRESS = 100;
       window.clearInterval(this.__POLLER_MXN_INTERVAL__);
-      this.dispatchEvent(
+      this.template.dispatchEvent(
         new CustomEvent('polling-end', {
           detail: {
             response: this?.[wiredMethod]?.data?.at(0),
