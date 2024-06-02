@@ -17,6 +17,8 @@ function boltBind(e)  {
 export class BoltElement extends mix(
   LightningElement
 ) {
+  skeletonRows = 2;
+  skeletonLabels = true;
   connectedCallback() {
     this.template.addEventListener('bolt-bind', boltBind.bind(this))
     if('suspendedCallback' in this)

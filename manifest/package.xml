@@ -4,6 +4,7 @@
         <members>bolt</members>
         <members>boltForm</members>
         <members>boltInput</members>
+        <members>boltSkeleton</members>
         <name>LightningComponentBundle</name>
     </types>
     <version>59.0</version>

@@ -1,0 +1,50 @@
+:host {
+  --_skeletonBackground: var(--skeletonBackground, #dedede);
+  --_skeletonThumb:  var(--skeletonThumb, #fafafa);
+  --_skeletonBackgroundAlpha: var(--skeletonBackgroundAlpha, 0%);
+  --_skeletonThumbAlpha: var(--_skeletonBackgroundAlpha, var(--skeletonThumbAlpha));
+  --_skeletonWidth: var(--skeletonWidth, 100%);
+  --_skeletonHeight: var(--skeletonHeight, 40px);
+  --_skeletonRows: var(--skeletonRows, auto);
+  --_skeletonCols: var(--skeletonCols, repeat(2, 1fr));
+  --_skeletonRadius: var(--skeletonRadius, var(--slds-c-input-radius-border, 
+    var(--sds-c-input-radius-border, 
+      var(
+        --lwc-borderRadiusMedium, 0.25rem
+      )
+    )
+  ));
+
+  display: grid;
+  width: var(--_skeletonWidth);
+  grid-template-columns: var(--_skeletonCols);
+  grid-auto-rows: var(--_skeletonRows);
+  gap: .5rem;
+  margin-block: .2rem;
+}
+aside {
+  display: flex;
+  flex-direction: column;
+  gap: .5rem;
+}
+.row {
+  height: var(--_skeletonHeight);
+  width: 100%;
+  border-radius: var(--_skeletonRadius);
+  background: linear-gradient(
+    to right, 
+    color-mix(in lab, var(--_skeletonBackground),transparent var(--_skeletonBackgroundAlpha)) 30%, 
+    color-mix(in lab, var(--_skeletonThumb),transparent var(--_skeletonThumbAlpha)) 38%,
+    color-mix(in lab, var(--_skeletonThumb),transparent var(--_skeletonThumbAlpha)) 40%,
+    color-mix(in lab, var(--_skeletonBackground),transparent var(--_skeletonBackgroundAlpha)) 50%
+  );
+  background-size: 200% 100%;
+  background-position: 100% 0; 
+  animation: 2000ms linear infinite skeleton;
+}
+.row.label {
+  height: calc(var(--_skeletonHeight) / 2);
+}
+@keyframes skeleton {
+  to { background-position: -100% 0; }
+}
