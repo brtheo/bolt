@@ -48,7 +48,12 @@ export function useSuspense(genericConstructor, params) {
       const _allMxnDone = allMxnDone(this, maybeSuspendedMixins)
       return params?.done ? params.done(this) && _allMxnDone : _allMxnDone;
     }
-    render() {  return this.__SUSPENSE_MXN_ALL_SETTLED__ ? params?.template ?? this.renderedTemplate : params?.untilTemplate; }
+    render() { console.log(this.renderedTemplate, 'yes', 'renderedTemplate' in this )
+       return this.__SUSPENSE_MXN_ALL_SETTLED__ 
+      ? params?.renderedTemplate
+        ? params?.renderedTemplate(this)
+        : params?.template 
+      : params?.untilTemplate; }
     renderedCallback() {
       if(this.__SUSPENSE_MXN_ALL_SETTLED__ && !this.#INITIATED) {
         this.template.dispatchEvent(new CustomEvent('all-settled'));
