@@ -21,4 +21,4 @@ export { comboboxify } from './comboboxify';
 export { Toaster} from './toaster';
 
 
-export {interpolate, pick, setExternalStyles, mix, compose} from './utils';
+export {interpolate, pick, setExternalStyles, mix, compose, soql, db} from './utils';

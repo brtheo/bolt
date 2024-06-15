@@ -7,6 +7,7 @@ import {
   useRecordsFields, 
   useRelatedRecords
 } from "./bolt";
+import soqlQuery from '@salesforce/apex/Bolt.soqlQuery';
 /**
  * Useful method to pass as an input a custom label formated as an ES6 template literal
  * like this : Hello ${name}
@@ -15,11 +16,20 @@ import {
  * @param {Object} params
  * @returns {string}
  */
-export function interpolate(input,params) {
+export const _interpolate = (input, params) => {
   const names = Object.keys(params);
   const vals = Object.values(params);
   return new Function(...names, `return \`${input}\`;`)(...vals);
 }
+export const _interpolateFrom = (input, target) =>
+  interpolate(input, pick(
+    ...Array.from(input.matchAll(/\${(.*?)}/g), ([,v]) => v)
+  ).from(target))
+  
+export const interpolate = (input, params = undefined) => 
+  params === undefined
+    ? {withValuesFrom: (obj) => _interpolateFrom(input, obj)}
+    : _interpolate(input, params)
 /**
  * Will plug your styles to an html element that has the attribute [data-style] on it
  * @param {string} styles 
@@ -43,7 +53,8 @@ export function setExternalStyles(styles) {
  */
 export function pick(...fields) {
   return {
-    from: (obj) => fields.reduce((acc, field) => Object.assign(acc, {[field]: obj[field]}) , {})
+    from: (obj) => fields.reduce((acc, field) => 
+      Object.assign(acc, {[field]: obj[field]}) , {})
   }
 }
 
@@ -115,3 +126,38 @@ export const allMxnDone = (self, maybeSuspendedMixins) =>
   maybeSuspendedMixins
     .filter(mxnProp => mxnProp in self)
     .reduce(...boolPropsReducer(self))
+
+
+const USER_MODE = 'WITH USER_MODE';
+/**
+  * @param {string[]} req
+  * @param {any[]} args
+*/
+export const soql = async (req, ...args ) => {
+  /** @type {{[key:string]:any}} */
+   const params = {};
+   let query = req.reduce((acc, curr, i) => {
+    if(args[i]) {
+      const argName = `arg${i}`;
+      const _curr = curr.toLocaleLowerCase()
+      if(
+        (_curr.includes('from') && !_curr.includes('where')) 
+        || _curr.includes('select')
+      ) {
+        if(args[i] instanceof Array)
+          return `${acc}${curr}${args[i].join(',')}`;
+        else return `${acc}${curr}${args[i]}`;
+      } else {
+        params[argName] = args[i];
+        return `${acc}${curr}:${argName}`;
+      }
+    } else if(args.length === 0) return curr
+    else return `${acc}${curr}`;
+   }, '')
+   let mode = USER_MODE;
+   if(query.includes(USER_MODE))
+      query = query.replace(USER_MODE, '');
+   else mode = null;
+   return await soqlQuery({query, params: JSON.stringify(params), mode});
+}
+export const db = soql;

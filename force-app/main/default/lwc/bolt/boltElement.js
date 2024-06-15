@@ -14,19 +14,14 @@ function boltBind(e)  {
       );
 }
 
-export class BoltElement extends mix(
-  LightningElement
-) {
+export class BoltElement extends LightningElement {
   skeletonRows = 2;
   skeletonLabels = true;
+  usingSkeletons = false;
+
   connectedCallback() {
     this.template.addEventListener('bolt-bind', boltBind.bind(this))
     if('suspendedCallback' in this)
       this.template.addEventListener('all-settled', this.suspendedCallback.bind(this), {once:true})
-  }
-  disconnectedCallback() {
-    this.template.removeEventListener('bolt-bind', boltBind.bind(this));
-    if('suspendedCallback' in this)
-      this.template.removeEventListener('all-settled', this.suspendedCallback.bind(this), {once:true})
   }
 }

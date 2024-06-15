@@ -5,7 +5,13 @@
         <members>boltForm</members>
         <members>boltInput</members>
         <members>boltSkeleton</members>
+        <members>boltLink</members>
         <name>LightningComponentBundle</name>
+    </types>
+    <types>
+        <members>Bolt</members>
+        <members>Bolt_Test</members>
+        <name>ApexCLass</name>
     </types>
     <version>59.0</version>
 </Package>

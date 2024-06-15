@@ -54,12 +54,6 @@ export const createModal = (HTMLTemplate, stylesheet , callbacks = false) => {
           callbacks.initialRenderCallback.forEach(cb => cb(this))
       }
     }
-    
-    
-    disconnectedCallback() {
-      this.$YES.removeEventListener('click', !this.#IS_YIELDING ? this.CLOSE_BY.YES : this.CLOSE_BY.YIELD)
-      if(this.$NO) this.$NO.removeEventListener('click', this.CLOSE_BY.NO)
-    }
   }
   if(callbacks.eventHandlerCallback) 
     Object.entries(callbacks.eventHandlerCallback).forEach(
