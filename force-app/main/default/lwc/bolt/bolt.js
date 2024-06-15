@@ -1,3 +1,11 @@
+/**
+ * @author Br.Theo 
+ * @repo https://github.com/brtheo/bolt
+ * @url https://brtheo.github.io/bolt/
+ * @description Bolt is a set of reusable mixins to boost LWC developpment velocity
+ */
+
+
 export { BoltElement } from './boltElement';
 
 export { useRecordFields } from './useRecordFields';
@@ -21,4 +29,4 @@ export { comboboxify } from './comboboxify';
 export { Toaster} from './toaster';
 
 
-export {interpolate, pick, setExternalStyles, mix, compose, soql, db} from './utils';
+export {interpolate, pick, setExternalStyles, mix, compose, soql, db, css} from './utils';

@@ -21,7 +21,9 @@ export class BoltElement extends LightningElement {
 
   connectedCallback() {
     this.template.addEventListener('bolt-bind', boltBind.bind(this))
-    if('suspendedCallback' in this)
-      this.template.addEventListener('all-settled', this.suspendedCallback.bind(this), {once:true})
+    this.template.addEventListener('all-settled', () => {
+      if('__SET_EXTERNAL_STYLES__' in this) this.__SET_EXTERNAL_STYLES__();
+      if('suspendedCallback' in this) this.suspendedCallback();
+    }, {once:true})
   }
 }
