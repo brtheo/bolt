@@ -35,9 +35,10 @@ export const interpolate = (input, params = undefined) =>
  * @param {string} styles 
  */
 export function setExternalStyles(styles) {
-  const $style = document.createElement('style');
-  $style.innerHTML = styles;
-  this.template.querySelector('*')?.appendChild($style)
+  // const $style = document.createElement('style');
+  // $style.innerHTML = styles;
+  // this.template.querySelector('*')?.appendChild($style)
+  this.refs?.style.insertAdjacentHTML('beforeend',`<style>${style}</style>`);
 }
 export const css = (styles, ...args) => styles.reduce((_styles, curr, i) => `${_styles}${curr}${args?.[i] ?? ''}`,'');
 
