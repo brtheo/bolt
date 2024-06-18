@@ -144,16 +144,15 @@ export const soql = async (req, ...args ) => {
     if(args[i]) {
       const argName = `arg${i}`;
       const _curr = curr.toLocaleLowerCase()
-      if(
-        (_curr.includes('from') && !_curr.includes('where')) 
-        || _curr.includes('select')
-      ) {
-        if(args[i] instanceof Array)
+      switch(true) {
+        case _curr.includes('where'):
+          params[argName] = args[i]
+          return `${acc}${curr}:${argName}`;
+        case _curr.includes('select') && args[i] instanceof Array:
           return `${acc}${curr}${args[i].join(',')}`;
-        else return `${acc}${curr}${args[i]}`;
-      } else {
-        params[argName] = args[i];
-        return `${acc}${curr}:${argName}`;
+        case _curr.includes('from'):
+        case _curr.includes('select'):
+          return `${acc}${curr}${args[i]}`;
       }
     } else if(args.length === 0) return curr
     else return `${acc}${curr}`;
