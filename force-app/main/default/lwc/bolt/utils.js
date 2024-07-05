@@ -35,10 +35,7 @@ export const interpolate = (input, params = undefined) =>
  * @param {string} styles 
  */
 export function setExternalStyles(styles) {
-  // const $style = document.createElement('style');
-  // $style.innerHTML = styles;
-  // this.template.querySelector('*')?.appendChild($style)
-  this.refs?.style.insertAdjacentHTML('beforeend',`<style>${style}</style>`);
+  this.refs?.style.insertAdjacentHTML('beforeend',`<style>${styles}</style>`)
 }
 export const css = (styles, ...args) => styles.reduce((_styles, curr, i) => `${_styles}${curr}${args?.[i] ?? ''}`,'');
 
@@ -143,16 +140,20 @@ export const soql = async (req, ...args ) => {
    let query = req.reduce((acc, curr, i) => {
     if(args[i]) {
       const argName = `arg${i}`;
-      const _curr = curr.toLocaleLowerCase()
+      const _curr = curr.toLowerCase()
       switch(true) {
+        case _curr.includes('in') && args[i] instanceof Array:
+          params[argName] = '$ARRAY$'+JSON.stringify(args[i].reduce((obj, curr) => ({...obj, [curr]:''}), {}));
+          return `${acc}${curr} :${argName}`;
         case _curr.includes('where'):
-          params[argName] = args[i]
-          return `${acc}${curr}:${argName}`;
+            params[argName] = args[i]
+            return `${acc}${curr}:${argName}`;
         case _curr.includes('select') && args[i] instanceof Array:
           return `${acc}${curr}${args[i].join(',')}`;
         case _curr.includes('from'):
         case _curr.includes('select'):
           return `${acc}${curr}${args[i]}`;
+        default: return ''
       }
     } else if(args.length === 0) return curr
     else return `${acc}${curr}`;
@@ -161,6 +162,6 @@ export const soql = async (req, ...args ) => {
    if(query.includes(USER_MODE))
       query = query.replace(USER_MODE, '');
    else mode = null;
-   return await soqlQuery({query, params: JSON.stringify(params), mode});
+   return soqlQuery({query, params: JSON.stringify(params), mode});
 }
 export const db = soql;
