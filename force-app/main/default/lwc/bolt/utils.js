@@ -146,6 +146,7 @@ export const soql = async (req, ...args ) => {
           params[argName] = '$ARRAY$'+JSON.stringify(args[i].reduce((obj, curr) => ({...obj, [curr]:''}), {}));
           return `${acc}${curr} :${argName}`;
         case _curr.includes('where'):
+        case _curr.includes('and'):
             params[argName] = args[i]
             return `${acc}${curr}:${argName}`;
         case _curr.includes('select') && args[i] instanceof Array:
