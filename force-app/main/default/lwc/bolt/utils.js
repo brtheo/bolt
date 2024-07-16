@@ -8,6 +8,7 @@ import {
   useRelatedRecords
 } from "./bolt";
 import soqlQuery from '@salesforce/apex/Bolt.soqlQuery';
+import soqlQueryWithoutCache from "@salesforce/apex/Bolt.soqlQueryWithoutCache";
 /**
  * Useful method to pass as an input a custom label formated as an ES6 template literal
  * like this : Hello ${name}
@@ -130,6 +131,8 @@ export const allMxnDone = (self, maybeSuspendedMixins) =>
 
 
 const USER_MODE = 'WITH USER_MODE';
+const UNCACHED = 'UNCACHED';
+const ARRAY_TOKEN = '$ARRAY$'
 /**
   * @param {string[]} req
   * @param {any[]} args
@@ -143,7 +146,7 @@ export const soql = async (req, ...args ) => {
       const _curr = curr.toLowerCase()
       switch(true) {
         case _curr.includes('in') && args[i] instanceof Array:
-          params[argName] = '$ARRAY$'+JSON.stringify(args[i].reduce((obj, curr) => ({...obj, [curr]:''}), {}));
+          params[argName] = ARRAY_TOKEN + JSON.stringify(args[i].reduce((obj, curr) => ({...obj, [curr]:''}), {}));
           return `${acc}${curr} :${argName}`;
         case _curr.includes('where'):
         case _curr.includes('and'):
@@ -161,8 +164,13 @@ export const soql = async (req, ...args ) => {
    }, '')
    let mode = USER_MODE;
    if(query.includes(USER_MODE))
-      query = query.replace(USER_MODE, '');
+    query = query.replace(USER_MODE, '');
    else mode = null;
-   return soqlQuery({query, params: JSON.stringify(params), mode});
+   console.log('DB :: ', query)
+   if(query.includes(UNCACHED)){
+    query = query.replace(UNCACHED, '');
+    return soqlQueryWithoutCache({query, params: JSON.stringify(params), mode});
+   } 
+  return soqlQuery({query, params: JSON.stringify(params), mode});
 }
 export const db = soql;
