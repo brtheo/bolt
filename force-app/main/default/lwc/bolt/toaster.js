@@ -24,7 +24,7 @@ const TOAST_VARIANTS = ['error','success', 'info', 'warning'];
  * @prop {Toast} warning 
  */
 const baseConf = {
-  title: '',
+  title: ' ', //put an extra space to mimic the presence of a title, otherwise lwc will throw an error stating that the toast lacks a label
   messageData: [],
   mode: 'dismissable'
 }
