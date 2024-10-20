@@ -3,6 +3,14 @@ import inputTemplate from './boltInput.html';
 import comboboxTemplate from './boltCombobox.html';
 import radioGroupTemplate from './boltRadioGroup.html';
 
+/**
+ * @typedef {String} ObjectApiName 
+ * @typedef {{[key:String]:any}} FieldValue
+ * @typedef BoltBindEventDetail
+ * @prop {'edit' | 'insert'} mode
+ * @prop {[ObjectApiName, FieldValue]} recordField
+ */
+
 export default class BoltInput extends LightningElement {
   /**BOLT PROPS */
   /** @type {'insert' | 'edit'} */ @api mode  = 'edit'; 
@@ -40,16 +48,17 @@ export default class BoltInput extends LightningElement {
   }
   bind(e) { 
     this[this.currentValue] = e.detail.value;
+    /**@type {BoltBindEventDetail} */
+    const detail = {
+      mode: this.mode,
+      recordField: [
+        this.objectApiName, 
+        { [this.fieldApiName]: this[this.currentValue] },
+      ]
+    };
     this.dispatchEvent(
-      new CustomEvent('bolt-bind', {
-        detail:{
-          mode: this.mode,
-          recordField: {
-            [this.objectApiName]: {
-              [this.fieldApiName]: this[this.currentValue]
-            },
-          }
-        },
+      new CustomEvent('boltbind', {
+        detail,
         bubbles: true,
         cancelable: true,
         composed: true

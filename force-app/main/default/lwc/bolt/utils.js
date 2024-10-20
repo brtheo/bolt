@@ -8,6 +8,7 @@ import {
   useRelatedRecords
 } from "./bolt";
 import soqlQuery from '@salesforce/apex/Bolt.soqlQuery';
+import soqlQueryWithoutCache from "@salesforce/apex/Bolt.soqlQueryWithoutCache";
 /**
  * Useful method to pass as an input a custom label formated as an ES6 template literal
  * like this : Hello ${name}
@@ -130,6 +131,8 @@ export const allMxnDone = (self, maybeSuspendedMixins) =>
 
 
 const USER_MODE = 'WITH USER_MODE';
+const UNCACHED = 'UNCACHED';
+const ARRAY_TOKEN = '$ARRAY$'
 /**
   * @param {string[]} req
   * @param {any[]} args
@@ -138,30 +141,41 @@ export const soql = async (req, ...args ) => {
   /** @type {{[key:string]:any}} */
    const params = {};
    let query = req.reduce((acc, curr, i) => {
-    if(args[i]) {
+    if(args[i] !== undefined) {
       const argName = `arg${i}`;
       const _curr = curr.toLowerCase()
       switch(true) {
+        case typeof args[i] === 'function':
+          return `${acc}${curr}${args[i]()}`
         case _curr.includes('in') && args[i] instanceof Array:
-          params[argName] = '$ARRAY$'+JSON.stringify(args[i].reduce((obj, curr) => ({...obj, [curr]:''}), {}));
-          return `${acc}${curr} :${argName}`;
+          params[argName] = ARRAY_TOKEN + JSON.stringify(args[i].reduce((obj, curr) => ({...obj, [curr]:''}), {}));
+          return `${acc}${curr}:${argName}`;
         case _curr.includes('where'):
-            params[argName] = args[i]
-            return `${acc}${curr}:${argName}`;
+        case _curr.includes('and'):
+        case _curr.includes('offset'):
+        case _curr.includes('limit'):
+        case _curr.includes('like'):
+          params[argName] = args[i]
+          return `${acc}${curr}:${argName}`;
         case _curr.includes('select') && args[i] instanceof Array:
           return `${acc}${curr}${args[i].join(',')}`;
         case _curr.includes('from'):
         case _curr.includes('select'):
           return `${acc}${curr}${args[i]}`;
-        default: return ''
+        default: return '';
       }
     } else if(args.length === 0) return curr
     else return `${acc}${curr}`;
    }, '')
    let mode = USER_MODE;
    if(query.includes(USER_MODE))
-      query = query.replace(USER_MODE, '');
+    query = query.replace(USER_MODE, '');
    else mode = null;
-   return soqlQuery({query, params: JSON.stringify(params), mode});
+   if(query.includes(UNCACHED)){
+    query = query.replace(UNCACHED, '');
+    console.log('DB',query, JSON.stringify(params))
+    return soqlQueryWithoutCache({query, params: JSON.stringify(params), mode});
+   } 
+  return soqlQuery({query, params: JSON.stringify(params), mode});
 }
 export const db = soql;

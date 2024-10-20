@@ -88,18 +88,32 @@ const multipleSObjectForm = (fields, mode, mixed, maybeSuspendedMxn) => {
   return clazz;
 }
 
+function mergeSupportiveFields(isOfMultipleSObject, fields, supportiveFields) {
+  return isOfMultipleSObject
+    ? fields.map((_fields,i) => _fields.concat(supportiveFields[i]))
+    : fields.concat(supportiveFields)
+}
+
 /**
  * @param {Constructor<any>} constructor 
  * @param {Field[] | Field[][]} fields 
  * @param {FormMode} mode 
  * @returns 
  */
-export const useForm = (constructor, fields, mode = 'edit') => {
+export const useForm = (constructor, fields, mode = 'edit', supportiveFields) => {
   const _isOfMultipleSObject = isOfMultipleSObject(fields);
   const mixed = mix(
     ...getStack({
-      'insert': insertArg(fields, _isOfMultipleSObject),
-      'edit': editArg(fields, _isOfMultipleSObject)
+      'insert': insertArg(mergeSupportiveFields(
+        _isOfMultipleSObject, 
+        fields, 
+        supportiveFields
+      ), _isOfMultipleSObject),
+      'edit': editArg(mergeSupportiveFields(
+        _isOfMultipleSObject, 
+        fields, 
+        supportiveFields
+      ), _isOfMultipleSObject)
     }[mode]),
     constructor
   );

@@ -29,4 +29,13 @@ export { comboboxify } from './comboboxify';
 export { Toaster} from './toaster';
 
 
-export {interpolate, pick, setExternalStyles, mix, compose, soql, db, css} from './utils';
+export {
+  interpolate, 
+  pick, 
+  setExternalStyles, 
+  mix, 
+  compose, 
+  soql, 
+  db, 
+  css
+} from './utils';
