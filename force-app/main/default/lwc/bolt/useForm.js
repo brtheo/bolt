@@ -101,6 +101,10 @@ function mergeSupportiveFields(isOfMultipleSObject, fields, supportiveFields) {
  * @returns 
  */
 export const useForm = (constructor, fields, mode = 'edit', supportiveFields) => {
+  if(supportiveFields?.at(0) instanceof Object) {
+    supportiveFields =  supportiveFields.map(({fieldApiName}) => fieldApiName)
+  }
+  
   const _isOfMultipleSObject = isOfMultipleSObject(fields);
   const mixed = mix(
     ...getStack({
