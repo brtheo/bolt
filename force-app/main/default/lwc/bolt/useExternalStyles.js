@@ -19,8 +19,7 @@ import { setExternalStyles } from "./utils";
  */
 export function useExternalStyles(genericConstructor, styles) {
   return class extends genericConstructor { 
-    suspendedCallback() {
-      if('__SUSPENSE_MXN_ALL_SETTLED__' in this ? this.__SUSPENSE_MXN_ALL_SETTLED__ : true) 
+    __SET_EXTERNAL_STYLES__() {
         setExternalStyles.call(this, styles);
     }
   }
