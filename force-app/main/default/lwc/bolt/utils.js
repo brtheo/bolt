@@ -9,6 +9,7 @@ import {
 } from "./bolt";
 import soqlQuery from '@salesforce/apex/Bolt.soqlQuery';
 import soqlQueryWithoutCache from "@salesforce/apex/Bolt.soqlQueryWithoutCache";
+import soqlQueryWithoutSharing from "@salesforce/apex/Bolt.soqlQueryWithoutSharing";
 /**
  * Useful method to pass as an input a custom label formated as an ES6 template literal
  * like this : Hello ${name}
@@ -132,6 +133,7 @@ export const allMxnDone = (self, maybeSuspendedMixins) =>
 
 const USER_MODE = 'WITH USER_MODE';
 const UNCACHED = 'UNCACHED';
+const WITHOUT_SHARING = 'WITHOUT_SHARING';
 const ARRAY_TOKEN = '$ARRAY$'
 /**
   * @param {string[]} req
@@ -173,8 +175,11 @@ export const soql = async (req, ...args ) => {
    else mode = null;
    if(query.includes(UNCACHED)){
     query = query.replace(UNCACHED, '');
-    console.log('DB',query, JSON.stringify(params))
     return soqlQueryWithoutCache({query, params: JSON.stringify(params), mode});
+   } 
+   else if(query.includes(WITHOUT_SHARING)){
+    query = query.replace(WITHOUT_SHARING, '');
+    return soqlQueryWithoutSharing({query, params: JSON.stringify(params), mode});
    } 
   return soqlQuery({query, params: JSON.stringify(params), mode});
 }
