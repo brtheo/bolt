@@ -54,7 +54,7 @@ export const useRelatedRecords = (genericConstructor, {relatedListId, fields, wh
     })
     __RELATED_RECORDS_MXN_WIRED_RESULTS__;
 
-    get __RELATED_RECORDS_MXN_DONE__() { return this[relatedListId] instanceof Array && this[relatedListId].length > 0; }
+    get __RELATED_RECORDS_MXN_DONE__() { return this[relatedListId] instanceof Array && this[relatedListId] != undefined; }
   }
   Object.defineProperty(clazz.prototype, relatedListId, {
     get() {
