@@ -21,16 +21,20 @@ export function useFormValidation(genericConstructor) {
   return class extends genericConstructor {
     get isFormValid() {
       return [...this.template.querySelectorAll('[data-checkable]')]
-      .reduce((acc,$input) => 
-        acc && $input.reportValidity(), 
+      .reduce((acc, $input) => {
+        const maybe = $input.reportValidity();
+        return acc && maybe
+        }, 
         true
       );
     }
     get formValidity() {
       return [...this.template.querySelectorAll('c-bolt-input')]
         .filter($input => !$input.hasAttribute('data-nocheck'))
-        .reduce((acc, $input) => 
-          acc && $input.reportValidity(), 
+        .reduce((acc, $input) => {
+          const maybe = $input.reportValidity();
+          return acc && maybe
+          }, 
           true
         );
     }
