@@ -10,6 +10,7 @@ class Token {
   static IN = "IN";
   static LIKE = "LIKE";
   static AND = "AND";
+  static OR = "OR";
   static LIMIT = "LIMIT";
   static OFFSET = "OFFSET";
   static SELECT = "SELECT";
@@ -49,6 +50,7 @@ export const db = async (req, ...args) => {
           return `${acc}${curr}${args[i]}`;
         case token.is(Token.WHERE):
         case token.is(Token.AND):
+        case token.is(Token.OR):
         case token.is(Token.LIKE):
         case token.is(Token.OFFSET):
         case token.is(Token.LIMIT):
